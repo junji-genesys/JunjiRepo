@@ -1,110 +1,24 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <title>SAA</title>
-    <script type="text/javascript">
-      function updateElement(id, isSuccess, textContent) {
-        var greenColor = 'color: green;';
-        var redColor = 'color: red;';
-        document.getElementById(id).textContent = textContent || isSuccess;
-        document.getElementById(id).style = isSuccess ? greenColor : redColor;
-    }
-    
-    function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/;SameSite=None;Secure";
-    }
-    
-    function getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    }
-    
-    function eraseCookie(name) {
-        document.cookie = name + '=; Max-Age=-99999999;';
-    }
-    
-    function isCookieSupported() {
-        try {
-            console.log('### document.cookie (before)', getCookie('cookietest'));
-            setCookie('cookietest', '1');
-            console.log('### document.cookie (after)', getCookie('cookietest'));
-            var found = getCookie('cookietest') === '1';
-            eraseCookie('cookietest');
-            console.log('### document.cookie (final)', getCookie('cookietest'));
-            return found;
-        } catch (e) {
-            return e;
-        }
-    }
-    
-    window.addEventListener('DOMContentLoaded', function () {
-        updateElement('hasStorageAccess', Boolean(document.hasStorageAccess));
-        updateElement('permissionsQuery', Boolean(navigator.permissions.query));
-        updateElement('requestStorageAccess', Boolean(document.requestStorageAccess));
-    
-        navigator.permissions.query({
-            name: 'storage-access'
-        }).then(function (permissionStatus) {
-            updateElement('permissionsQueryResult', true, permissionStatus.state);
-        }, function (error) {
-            updateElement('permissionsQueryResult', false, error);
-        });
-    
-        if (Boolean(document.hasStorageAccess)) {
-            document.hasStorageAccess().then(function (hasAccess) {
-                updateElement('hasStorageAccessResult', hasAccess);
-            }, function (error) {
-                updateElement('hasStorageAccessResult', false, error);
-            });
-        } else {
-            updateElement('hasStorageAccessResult', false);
-        }
-    
-        // cookie
-        var result = isCookieSupported()
-        console.log('### result', result);
-        updateElement('cookie', result === true, result);
-    
-        // cookieDeprecationLabel
-        if ('cookieDeprecationLabel' in navigator) {
-            navigator.cookieDeprecationLabel.getValue().then((label) => {
-                console.log('### cookieDeprecationLabel', label);
-                updateElement('cookieDeprecationLabel', label !== '', label);
-            });
-        } else {
-            updateElement('cookieDeprecationLabel', false);
-        }
-    });
-    </script>
+<!DOCTYPE html>
+<head>
     <style>
-      body {
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
+        body {
+            padding: 20px;
+        }
+        iframe[name="client"] {
+            width: 500px;
+            height: 450px;
+            border: 1px solid #000;
+            margin: 10px;
+        }
+        iframe[name="interaction"] {
+            width: 500px;
+            height: 450px;
+            border: 1px solid #000;
+            margin: 10px;
+        }
     </style>
-  </head>
-  <body>
-    <h1>Hello, World!</h1>
-    <div>hasStorageAccess: <span id="hasStorageAccess"></span></div>
-    <div>hasStorageAccess(): <span id="hasStorageAccessResult"></span></div>
-    <div>permissions.query: <span id="permissionsQuery"></span></div>
-    <div>permissions.query({ name: 'storage-access' }): <span id="permissionsQueryResult"></span></div>
-    <div>requestStorageAccess: <span id="requestStorageAccess"></span></div>
-    <div>cookie: <span id="cookie"></span></div>
-    <div>cookieDeprecationLabel: <span id="cookieDeprecationLabel"></span></div>
-  </body>
-</html>
+</head>
+<body>
+    <iframe name="client" allow="camera *; microphone *; autoplay *; hid *" src="https://junji-bucket-dev.s3.amazonaws.com/storageAccess.html"></iframe>
+    <!-- <iframe name="interaction" allow="camera *; microphone *; autoplay *; hid *" src="https://localhost/src/interaction.html"></iframe> -->
+</body>
